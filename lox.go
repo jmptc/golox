@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-    "github.com/jmptc/golox/token"
+    "github.com/jmptc/golox/scanner"
 )
 
 var hadError bool
@@ -14,9 +14,9 @@ func main() {
 	fmt.Println("Lox Interpreter")
 
 	// runPrompt()
-
-    t := token.Token{ TokenType: "DOT", Lexeme: ".", Line: 0}
-    fmt.Println(t)
+    
+    scanner := scanner.NewScanner("hello world")
+    fmt.Println(scanner)
 }
 
 func runPrompt() {
