@@ -1,23 +1,30 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "bufio"
+	"bufio"
+	"fmt"
+	"os"
+
+    "github.com/jmptc/golox/token"
 )
 
-func main() {
-    fmt.Println("Lox Interpreter")
+var hadError bool
 
-    runPrompt()
+func main() {
+	fmt.Println("Lox Interpreter")
+
+	// runPrompt()
+
+    t := token.Token{ TokenType: "DOT", Lexeme: ".", Line: 0}
+    fmt.Println(t)
 }
 
 func runPrompt() {
-    reader := bufio.NewReader(os.Stdin) 
-    fmt.Print("> ")
-    line, err := reader.ReadString('\n')
-    if err != nil {
-        fmt.Println(err)
-    }
-    fmt.Println(line)
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("> ")
+	line, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(line)
 }
