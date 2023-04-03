@@ -15,7 +15,7 @@ func main() {
 
 	// runPrompt()
 
-	scanner := scanner.NewScanner("(){}")
+	scanner := scanner.NewScanner("! != >= <= = == > <")
 	toks := scanner.ScanTokens()
 	for i, tok := range toks {
 		fmt.Println(i, tok)

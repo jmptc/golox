@@ -38,10 +38,56 @@ func TestScanSingleCharacterTokens(t *testing.T) {
 		{TokenType: token.STAR, Lexeme: "*", Line: 0},
 		{TokenType: token.EOF, Lexeme: "", Line: 0},
 	}
-
+	/*
 	scanner := NewScanner(text)
 	tokens := scanner.ScanTokens()
 
+	if len(expectedTokens) != len(tokens) {
+		t.Errorf("Token count mismatch. Expected: %d Got: %d", len(expectedTokens), len(tokens))
+	}
+
+	for i, tok := range tokens {
+		expectedTok := expectedTokens[i]
+		if tok.TokenType != expectedTok.TokenType {
+			t.Errorf("TokenType mismatch. Expected: %s Got: %s", expectedTok.TokenType, tok.TokenType)
+		}
+
+		if tok.Lexeme != expectedTok.Lexeme {
+			t.Errorf("Lexeme mismatch. Expected: %s Got: %s", expectedTok.Lexeme, tok.Lexeme)
+		}
+
+		if tok.Line != expectedTok.Line {
+			t.Errorf("Line mismatch: Expected: %d Got: %d", expectedTok.Line, tok.Line)
+		}
+	}
+	*/
+	compareExpected(t, text, expectedTokens)
+}
+
+func TestConditionalTwoCharacterTokens(t *testing.T) {
+	text := "! !=  = == < <= > >="
+
+	expectedTokens := []token.Token{
+		{TokenType: token.BANG, Lexeme: "!", Line: 0},
+		{TokenType: token.BANG_EQUAL, Lexeme: "!=", Line: 0},
+		{TokenType: token.EQUAL, Lexeme: "=", Line: 0},
+		{TokenType: token.EQUAL_EQUAL, Lexeme: "==", Line: 0},
+		{TokenType: token.LESS, Lexeme: "<", Line: 0},
+		{TokenType: token.LESS_EQUAL, Lexeme: "<=", Line: 0},
+		{TokenType: token.GREATER, Lexeme: ">", Line: 0},
+		{TokenType: token.GREATER_EQUAL, Lexeme: ">=", Line: 0},
+		{TokenType: token.EOF, Lexeme: "", Line: 0},
+	}
+
+	compareExpected(t, text, expectedTokens)
+}
+
+// creates scanner with source and compares output with expected tokens 
+func compareExpected(t *testing.T, source string, expectedTokens []token.Token) {
+	s := NewScanner(source)
+	tokens := s.ScanTokens()
+	
+	
 	if len(expectedTokens) != len(tokens) {
 		t.Errorf("Token count mismatch. Expected: %d Got: %d", len(expectedTokens), len(tokens))
 	}

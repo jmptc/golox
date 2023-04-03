@@ -50,6 +50,30 @@ func (s *Scanner) scanToken() {
 		s.addToken(token.SEMICOLON)
 	case '*':
 		s.addToken(token.STAR)
+	case '!':
+		if s.match('=') {
+			s.addToken(token.BANG_EQUAL)
+		} else {
+			s.addToken(token.BANG)
+		}
+	case '=':
+		if s.match('=') {
+			s.addToken(token.EQUAL_EQUAL)
+		} else {
+			s.addToken(token.EQUAL)
+		}
+	case '<':
+		if s.match('=') {
+			s.addToken(token.LESS_EQUAL)
+		} else {
+			s.addToken(token.LESS)
+		}
+	case '>':
+		if s.match('=') {
+			s.addToken(token.GREATER_EQUAL)
+		} else {
+			s.addToken(token.GREATER)
+		}
 	}
 }
 
@@ -67,4 +91,16 @@ func (s *Scanner) addToken(tokenType string) {
 	text := s.source[s.start:s.current]
 	token := token.Token{TokenType: tokenType, Lexeme: text, Line: s.line}
 	s.tokens = append(s.tokens, token)
+}
+
+func (s *Scanner) match(expected byte) bool {
+	if s.AtEnd() {
+		return false
+	}
+	if s.source[s.current] != expected {
+		return false
+	}
+
+	s.current += 1
+	return true
 }
