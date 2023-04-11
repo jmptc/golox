@@ -38,29 +38,6 @@ func TestScanSingleCharacterTokens(t *testing.T) {
 		{TokenType: token.STAR, Lexeme: "*", Line: 0},
 		{TokenType: token.EOF, Lexeme: "", Line: 0},
 	}
-	/*
-	scanner := NewScanner(text)
-	tokens := scanner.ScanTokens()
-
-	if len(expectedTokens) != len(tokens) {
-		t.Errorf("Token count mismatch. Expected: %d Got: %d", len(expectedTokens), len(tokens))
-	}
-
-	for i, tok := range tokens {
-		expectedTok := expectedTokens[i]
-		if tok.TokenType != expectedTok.TokenType {
-			t.Errorf("TokenType mismatch. Expected: %s Got: %s", expectedTok.TokenType, tok.TokenType)
-		}
-
-		if tok.Lexeme != expectedTok.Lexeme {
-			t.Errorf("Lexeme mismatch. Expected: %s Got: %s", expectedTok.Lexeme, tok.Lexeme)
-		}
-
-		if tok.Line != expectedTok.Line {
-			t.Errorf("Line mismatch: Expected: %d Got: %d", expectedTok.Line, tok.Line)
-		}
-	}
-	*/
 	compareExpected(t, text, expectedTokens)
 }
 
@@ -76,6 +53,47 @@ func TestConditionalTwoCharacterTokens(t *testing.T) {
 		{TokenType: token.LESS_EQUAL, Lexeme: "<=", Line: 0},
 		{TokenType: token.GREATER, Lexeme: ">", Line: 0},
 		{TokenType: token.GREATER_EQUAL, Lexeme: ">=", Line: 0},
+		{TokenType: token.EOF, Lexeme: "", Line: 0},
+	}
+
+	compareExpected(t, text, expectedTokens)
+}
+
+func TestComments(t *testing.T) {
+	text := `! // This is a comment
+		// Here's another comment
+		( )`
+
+	expectedTokens := []token.Token{
+		{TokenType: token.BANG, Lexeme: "!", Line: 0},
+		{TokenType: token.LEFT_PAREN, Lexeme: "(", Line: 2},
+		{TokenType: token.RIGHT_PAREN, Lexeme: ")", Line: 2},
+		{TokenType: token.EOF, Lexeme: "", Line: 2},
+	}
+
+	compareExpected(t, text, expectedTokens)
+}
+
+func TestStringTokenization(t *testing.T) {
+	text := `"hello world"`
+
+	expectedTokens := []token.Token{
+		{TokenType: token.STRING, Lexeme: "hello world", Line: 0},
+		{TokenType: token.EOF, Lexeme: "", Line: 0},
+	}
+
+	compareExpected(t, text, expectedTokens)
+}
+
+func TestNumberTokenization(t *testing.T) {
+	text := "12.34 2. .37"
+
+	expectedTokens := []token.Token{
+		{TokenType: token.NUMBER, Lexeme: "12.34", Line: 0},
+		{TokenType: token.NUMBER, Lexeme: "2", Line: 0},
+		{TokenType: token.DOT, Lexeme: ".", Line: 0},
+		{TokenType: token.DOT, Lexeme: ".", Line: 0},
+		{TokenType: token.NUMBER, Lexeme: "37", Line: 0},
 		{TokenType: token.EOF, Lexeme: "", Line: 0},
 	}
 

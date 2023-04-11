@@ -1,11 +1,14 @@
 package scanner
 
 import (
+	"unicode"
+
 	"github.com/jmptc/golox/token"
 )
 
 type Scanner struct {
-	source  string
+	//source  string
+	source  []rune
 	start   int
 	current int
 	line    int
@@ -13,7 +16,7 @@ type Scanner struct {
 }
 
 func NewScanner(source string) *Scanner {
-	return &Scanner{source: source}
+	return &Scanner{source: []rune(source)}
 }
 
 func (s *Scanner) ScanTokens() []token.Token {
@@ -74,10 +77,26 @@ func (s *Scanner) scanToken() {
 		} else {
 			s.addToken(token.GREATER)
 		}
+	case '/':
+		if s.match('/') {
+			for s.peek() != '\n' && !s.AtEnd() {
+				s.advance()
+			}
+		}
+	case '\n':
+		s.line += 1
+	case ' ', '\t', '\r':
+	case '"':
+		s.tokenizeString()
+	default:
+		if unicode.IsDigit(c){
+			s.tokenizeNumber()
+		}
+
 	}
 }
 
-func (s *Scanner) advance() byte {
+func (s *Scanner) advance() rune {
 	b := s.source[s.current]
 	s.current += 1
 	return b
@@ -89,11 +108,16 @@ func (s *Scanner) AtEnd() bool {
 
 func (s *Scanner) addToken(tokenType string) {
 	text := s.source[s.start:s.current]
-	token := token.Token{TokenType: tokenType, Lexeme: text, Line: s.line}
+	token := token.Token{TokenType: tokenType, Lexeme: string(text), Line: s.line}
 	s.tokens = append(s.tokens, token)
 }
 
-func (s *Scanner) match(expected byte) bool {
+func (s *Scanner) addTokenTypeAndVal(tokenType, val string) {
+	token := token.Token{TokenType: tokenType, Lexeme: val, Line: s.line}
+	s.tokens = append(s.tokens, token)
+}
+
+func (s *Scanner) match(expected rune) bool {
 	if s.AtEnd() {
 		return false
 	}
@@ -103,4 +127,56 @@ func (s *Scanner) match(expected byte) bool {
 
 	s.current += 1
 	return true
+}
+
+func (s *Scanner) peek() rune {
+	if s.AtEnd() {
+		return '\x00'
+	} else {
+		return s.source[s.current]
+	}
+
+}
+
+func (s *Scanner) peekNext() rune {
+	if s.current+1 >= len(s.source) {
+		return '\x00'
+	}
+
+	return s.source[s.current+1]
+}
+
+
+func (s *Scanner) tokenizeString() {
+	for s.peek() != '"' && !s.AtEnd() {
+		if s.peek() == '\n' {
+			s.line += 1
+		}
+		s.advance()
+	}
+
+	if s.AtEnd() {
+		return
+	}
+
+	s.advance()
+
+	value := s.source[s.start+1 : s.current-1]
+	s.addTokenTypeAndVal(token.STRING, string(value))
+}
+
+func (s *Scanner) tokenizeNumber() {
+	for unicode.IsDigit(s.peek()) {
+		s.advance()
+	}
+
+	if s.peek() == '.' && unicode.IsDigit(s.peekNext()){
+		s.advance()
+
+		for unicode.IsDigit(s.peek()) {
+			s.advance()
+		}
+	}
+
+	s.addToken(token.NUMBER)
 }
