@@ -100,12 +100,28 @@ func TestNumberTokenization(t *testing.T) {
 	compareExpected(t, text, expectedTokens)
 }
 
-// creates scanner with source and compares output with expected tokens 
+func TestIdentifierAndKeywordsTokenization(t *testing.T) {
+	text := "var hello = \"hi there\" if else testing"
+
+	expectedTokens := []token.Token{
+		{TokenType: token.VAR, Lexeme: "var", Line: 0},
+		{TokenType: token.IDENTIFIER, Lexeme: "hello", Line: 0},
+		{TokenType: token.EQUAL, Lexeme: "=", Line: 0},
+		{TokenType: token.STRING, Lexeme: "hi there", Line: 0},
+		{TokenType: token.IF, Lexeme: "if", Line: 0},
+		{TokenType: token.ELSE, Lexeme: "else", Line: 0},
+		{TokenType: token.IDENTIFIER, Lexeme: "testing", Line: 0},
+		{TokenType: token.EOF, Lexeme: "", Line: 0},
+	}
+
+	compareExpected(t, text, expectedTokens)
+}
+
+// creates scanner with source and compares output with expected tokens
 func compareExpected(t *testing.T, source string, expectedTokens []token.Token) {
 	s := NewScanner(source)
 	tokens := s.ScanTokens()
-	
-	
+
 	if len(expectedTokens) != len(tokens) {
 		t.Errorf("Token count mismatch. Expected: %d Got: %d", len(expectedTokens), len(tokens))
 	}

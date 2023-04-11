@@ -14,8 +14,9 @@ func main() {
 	fmt.Println("Lox Interpreter")
 
 	// runPrompt()
-
-	scanner := scanner.NewScanner("! != >= <= = == > <")
+	text := "var x = 12.34; var id = \"Hello world\"" 
+	fmt.Println("text: ", text)
+	scanner := scanner.NewScanner(text)
 	toks := scanner.ScanTokens()
 	for i, tok := range toks {
 		fmt.Println(i, tok)

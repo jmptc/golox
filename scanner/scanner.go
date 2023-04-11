@@ -6,6 +6,30 @@ import (
 	"github.com/jmptc/golox/token"
 )
 
+var (
+	keywords = make(map[string]string)
+)
+
+func init() {
+	keywords["and"] = token.AND
+	keywords["class"] = token.CLASS
+	keywords["else"] = token.ELSE
+	keywords["false"] = token.FALSE
+	keywords["fun"] = token.FUN
+	keywords["for"] = token.FOR
+	keywords["if"] = token.IF
+	keywords["nil"] = token.NIL
+	keywords["or"] = token.OR
+	keywords["print"] = token.PRINT
+	keywords["return"] = token.RETURN
+	keywords["super"] = token.SUPER
+	keywords["this"] = token.THIS
+	keywords["true"] = token.TRUE
+	keywords["var"] = token.VAR
+	keywords["while"] = token.WHILE
+
+}
+
 type Scanner struct {
 	//source  string
 	source  []rune
@@ -89,8 +113,10 @@ func (s *Scanner) scanToken() {
 	case '"':
 		s.tokenizeString()
 	default:
-		if unicode.IsDigit(c){
+		if unicode.IsDigit(c) {
 			s.tokenizeNumber()
+		} else if isAlphanumeric(c) {
+			s.tokenizeIdentifier()
 		}
 
 	}
@@ -146,7 +172,6 @@ func (s *Scanner) peekNext() rune {
 	return s.source[s.current+1]
 }
 
-
 func (s *Scanner) tokenizeString() {
 	for s.peek() != '"' && !s.AtEnd() {
 		if s.peek() == '\n' {
@@ -170,7 +195,7 @@ func (s *Scanner) tokenizeNumber() {
 		s.advance()
 	}
 
-	if s.peek() == '.' && unicode.IsDigit(s.peekNext()){
+	if s.peek() == '.' && unicode.IsDigit(s.peekNext()) {
 		s.advance()
 
 		for unicode.IsDigit(s.peek()) {
@@ -179,4 +204,22 @@ func (s *Scanner) tokenizeNumber() {
 	}
 
 	s.addToken(token.NUMBER)
+}
+
+func (s *Scanner) tokenizeIdentifier() {
+	for isAlphanumeric(s.peek()) {
+		s.advance()
+	}
+
+	text := string(s.source[s.start : s.current])
+	keyword, ok := keywords[text]
+	if !ok {
+		s.addTokenTypeAndVal(token.IDENTIFIER, text)
+	} else {
+		s.addTokenTypeAndVal(keyword, text)
+	}
+}
+
+func isAlphanumeric(c rune) bool {
+	return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_'
 }
