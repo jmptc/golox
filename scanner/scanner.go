@@ -211,7 +211,7 @@ func (s *Scanner) tokenizeIdentifier() {
 		s.advance()
 	}
 
-	text := string(s.source[s.start : s.current])
+	text := string(s.source[s.start:s.current])
 	keyword, ok := keywords[text]
 	if !ok {
 		s.addTokenTypeAndVal(token.IDENTIFIER, text)
